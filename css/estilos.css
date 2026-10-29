@@ -1,0 +1,1056 @@
+/* =====================================================
+   Estilos de CursoNet — versión 2
+   Inspirado en el estilo "papel crema + tinta violeta":
+   fondo crema, bordes finos oscuros, esquinas rectas,
+   botones amarillos tipo "sticker" y bandas verde azulado.
+   ===================================================== */
+
+/* ---------- 1. Colores y medidas ---------- */
+:root {
+    --crema:    #fffcf7;   /* fondo de la página (papel) */
+    --blanco:   #ffffff;   /* tarjetas que "flotan" sobre el papel */
+    --tinta:    #0d0129;   /* texto y bordes (casi negro con toque violeta) */
+    --amarillo: #fae59b;   /* botones principales y detalles */
+    --teal:     #19615c;   /* bandas de color, barras de avance, enlaces */
+    --negro:    #000000;   /* solo para la sombra de los botones */
+
+    --gris:     #55506a;   /* texto secundario (tinta más clara) */
+    --linea:    rgba(13, 1, 41, 0.14);   /* líneas suaves entre filas */
+    --teal-suave: #e3efed; /* fondo clarito para etiquetas */
+    --rojo:     #b3261e;   /* errores y acciones peligrosas */
+    --rojo-suave: #fbe3e1;
+
+    --sombra: 1px 1px 3px 0 var(--negro);   /* la sombra dura del botón amarillo */
+
+    --letra:      "Inter", ui-sans-serif, system-ui, sans-serif;
+    --letra-mono: "JetBrains Mono", ui-monospace, monospace;   /* para etiquetas y números */
+}
+
+/* ---------- 2. Base ---------- */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--crema);
+    color: var(--tinta);
+    font-family: var(--letra);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 8px;
+}
+h1 { font-size: 40px; letter-spacing: -0.01em; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+
+a { color: var(--teal); text-underline-offset: 3px; }
+a:hover { color: var(--tinta); }
+
+.texto-gris { color: var(--gris); }
+
+/* Letra tipo máquina de escribir, en mayúsculas: para etiquetas pequeñas */
+.mono {
+    font-family: var(--letra-mono);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Lo que se enfoca con el teclado se marca en amarillo */
+:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
+
+/* ---------- 3. Estructura: menú a la izquierda + contenido ---------- */
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.lateral {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--crema);
+    border-right: 1px solid var(--tinta);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.lateral-arriba {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--tinta);
+    text-decoration: none;
+    padding: 0 8px;
+}
+.logo:hover { color: var(--tinta); }
+
+/* Botón ☰ que solo aparece en el celular */
+.boton-menu {
+    display: none;
+    background: none;
+    border: 1px solid var(--tinta);
+    color: var(--tinta);
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    color: var(--tinta);
+    text-decoration: none;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+}
+.menu a:hover  { border-color: var(--tinta); }
+.menu a.activo { background: var(--tinta); color: var(--crema); font-weight: 700; }
+.menu a.cerrar-sesion       { color: var(--rojo); margin-top: 16px; }
+.menu a.cerrar-sesion:hover { border-color: var(--rojo); }
+
+/* Numerito de notificaciones sin leer */
+.contador {
+    background: var(--amarillo);
+    color: var(--tinta);
+    border: 1px solid var(--tinta);
+    font-family: var(--letra-mono);
+    font-size: 14px;
+    line-height: 1;
+    padding: 3px 7px;
+}
+
+/* Usuario abajo del menú */
+.usuario-menu {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 8px 0;
+    border-top: 1px solid var(--tinta);
+    color: var(--tinta);
+    text-decoration: none;
+}
+.usuario-menu small { display: block; color: var(--gris); }
+
+.contenido {
+    flex: 1;
+    min-width: 0;            /* evita que las tablas anchas rompan la página */
+    padding: 40px 40px 80px;
+    max-width: 1200px;
+}
+
+/* ---------- 4. Ventanitas de confirmación (<dialog>) ---------- */
+.confirmar {
+    border: 1px solid var(--tinta);
+    padding: 40px;
+    width: calc(100% - 32px);
+    max-width: 460px;
+    background: var(--blanco);
+    color: var(--tinta);
+}
+.confirmar::backdrop { background: rgba(13, 1, 41, 0.5); }
+.confirmar p { margin: 0 0 24px; }
+.confirmar-botones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+/* El botón de "salir" que no parece botón */
+.confirmar .boton-pared {
+    background: none;
+    color: var(--gris);
+    border: none;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+.confirmar .boton-pared:hover { color: var(--rojo); }
+
+/* ---------- 5. Componentes ---------- */
+
+/* Tarjeta: marco fino oscuro sobre fondo blanco */
+.tarjeta {
+    background: var(--blanco);
+    border: 1px solid var(--tinta);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.tarjeta-grande { padding: 40px; }
+
+/* Botón principal: amarillo con borde y sombra dura, como un sticker */
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--amarillo);
+    color: var(--tinta);
+    border: 1px solid var(--tinta);
+    box-shadow: var(--sombra);
+    padding: 12px 24px;
+    font: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+}
+.boton:hover  { color: var(--tinta); transform: translate(-1px, -1px); box-shadow: 2px 2px 3px 0 var(--negro); }
+.boton:active { transform: translate(1px, 1px); box-shadow: none; }
+
+/* Botón secundario: solo contorno, sin relleno ni sombra */
+.boton-secundario {
+    background: transparent;
+    box-shadow: none;
+}
+.boton-secundario:hover { background: var(--crema); box-shadow: none; transform: none; text-decoration: underline; }
+
+/* Botón oscuro (solo en lugares especiales, como la constancia) */
+.boton-oscuro { background: var(--tinta); color: var(--crema); box-shadow: none; }
+.boton-oscuro:hover { color: var(--crema); box-shadow: none; transform: none; opacity: 0.9; }
+
+.boton-chico   { padding: 6px 12px; }
+.boton-ancho   { width: 100%; }
+.boton-peligro { background: var(--rojo); color: var(--blanco); border-color: var(--rojo); }
+.boton-peligro:hover { color: var(--blanco); }
+
+.enlace-peligro {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--rojo);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Cuadro con iniciales o foto (cuadrado, como todo en este estilo) */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--tinta);
+    background: var(--amarillo);
+    color: var(--tinta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    object-fit: cover;          /* para que las fotos no se deformen */
+}
+.avatar-grande { width: 96px; height: 96px; font-size: 32px; }
+
+/* Etiquetas pequeñas (ej. "Publicado", "Borrador") */
+.etiqueta {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--teal);
+    background: var(--teal-suave);
+    color: var(--teal);
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.etiqueta-alerta { background: var(--amarillo); color: var(--tinta); border-color: var(--tinta); }
+.etiqueta-gris   { background: var(--crema); color: var(--gris); border-color: var(--gris); }
+.etiqueta-roja   { background: var(--rojo-suave); color: var(--rojo); border-color: var(--rojo); }
+
+/* Barra de avance: marco fino con relleno verde azulado */
+.barra-avance {
+    height: 12px;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+}
+.barra-avance div {
+    height: 100%;
+    background: var(--teal);
+}
+.barra-avance.completa div { background: var(--amarillo); }
+
+/* Formularios */
+.campo { margin-bottom: 24px; }
+.campo label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+input,
+select,
+textarea {
+    padding: 12px 14px;
+    border: 1px solid var(--tinta);
+    border-radius: 0;
+    font: inherit;
+    background: var(--blanco);
+    color: var(--tinta);
+}
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--amarillo);
+}
+input[type="file"] { padding: 10px; background: var(--crema); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--teal); width: 18px; height: 18px; }
+.campo input:not([type="checkbox"]):not([type="radio"]),
+.campo select,
+.campo textarea { width: 100%; }
+.campo small { display: block; color: var(--gris); margin-top: 6px; }
+
+/* Mensaje de error debajo de un campo */
+.campo .error-campo {
+    display: block;
+    color: var(--rojo);
+    font-size: 14px;
+    margin-top: 6px;
+}
+.campo:has(.error-campo) input,
+.campo:has(.error-campo) textarea,
+.campo:has(.error-campo) select { border-color: var(--rojo); }
+
+/* Mensaje fijo dentro de la página */
+.aviso {
+    padding: 16px;
+    border: 1px solid var(--teal);
+    background: var(--teal-suave);
+    margin-bottom: 24px;
+}
+.aviso-error { border-color: var(--rojo); background: var(--rojo-suave); }
+
+/* Globito que aparece arriba a la derecha y se va solo (js/validar.js) */
+.globos {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: min(420px, calc(100% - 48px));
+}
+.globo {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 16px 16px 20px;
+    background: var(--blanco);
+    border: 1px solid var(--tinta);
+    border-left: 6px solid var(--teal);
+    box-shadow: var(--sombra);
+    animation: entrar 0.25s ease-out;
+}
+.globo-error { border-left-color: var(--rojo); }
+.globo p { margin: 0; flex: 1; }
+.globo button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--gris);
+}
+.globo.saliendo { opacity: 0; transform: translateX(20px); transition: 0.3s; }
+@keyframes entrar { from { opacity: 0; transform: translateY(-10px); } }
+
+/* ---------- 6. Piezas de las páginas ---------- */
+
+/* Título de la página + botones a la derecha */
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+.encabezado p { margin: 0; font-size: 20px; }
+
+/* Banda verde azulado de lado a lado (para el saludo y portadas) */
+.banda {
+    background: var(--teal);
+    color: var(--crema);
+    margin: -40px -40px 40px;
+    padding: 64px 40px;
+    position: relative;
+    overflow: hidden;
+}
+.banda h1 { font-size: 48px; max-width: 760px; }
+.banda p  { font-size: 20px; max-width: 640px; margin: 0; opacity: 0.9; }
+.banda p.mono { font-size: 14px; }
+.banda a:not(.boton) { color: var(--crema); }
+.banda .migas, .banda .migas a { color: var(--crema); opacity: 0.85; }
+.banda .barra-avance { border-color: var(--crema); background: transparent; }
+.banda .barra-avance div { background: var(--amarillo); }
+.banda .boton-secundario { color: var(--crema); border-color: var(--crema); }
+.banda .boton-secundario:hover { background: rgba(255, 252, 247, 0.1); }
+.banda .etiqueta { background: transparent; color: var(--amarillo); border-color: var(--amarillo); }
+.banda > * { position: relative; }   /* el texto va encima del dibujo */
+
+/* Dibujo de puntitos/líneas en la esquina de una banda */
+.banda-dibujo {
+    position: absolute !important;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+/* Ruta arriba del título (ej. "Mis cursos › Desarrollo web") */
+.migas { font-size: 14px; color: var(--gris); margin-bottom: 16px; }
+.migas a { color: var(--gris); }
+
+/* Fila de números grandes (ej. "124 alumnos") */
+/* Cada cuadro dibuja su línea derecha e inferior; el contenedor la de arriba e izquierda */
+.numeros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    border-top: 1px solid var(--tinta);
+    border-left: 1px solid var(--tinta);
+    margin-bottom: 40px;
+}
+.numero {
+    padding: 24px;
+    background: var(--blanco);
+    border-right: 1px solid var(--tinta);
+    border-bottom: 1px solid var(--tinta);
+}
+.numero strong {
+    display: block;
+    font-size: 40px;
+    line-height: 1.2;
+}
+.numero span {
+    color: var(--gris);
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Cuadrícula de tarjetas */
+.rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+.rejilla-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.rejilla > .tarjeta { margin: 0; }
+
+.curso-tarjeta {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: relative;
+}
+.curso-portada {
+    display: block;
+    width: 100%;
+    height: 130px;
+    background: var(--crema);
+    border-bottom: 1px solid var(--tinta);
+}
+.curso-cuerpo {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+.curso-cuerpo h3, .curso-cuerpo p { margin: 0; }
+.curso-cuerpo .boton { width: 100%; margin-top: auto; }
+.curso-cuerpo form:last-child { margin-top: auto; }
+.curso-cuerpo form:last-child .boton { margin-top: 0; }
+.curso-cuerpo .fila .boton { width: auto; }
+
+/* Corazón de favoritos, arriba a la derecha de la portada */
+.favorito {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+.favorito button {
+    width: 40px;
+    height: 40px;
+    background: var(--blanco);
+    border: 1px solid var(--tinta);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--tinta);
+}
+.favorito button.si { background: var(--amarillo); }
+
+/* Estrellas */
+.estrellas { color: var(--tinta); letter-spacing: 1px; white-space: nowrap; }
+.estrellas-vacias { color: var(--linea); }
+
+/* Elegir estrellas en el formulario de reseña (radio buttons escondidos) */
+.elegir-estrellas {
+    display: inline-flex;
+    flex-direction: row-reverse;   /* así el hover pinta "hacia la izquierda" */
+    gap: 4px;
+}
+.elegir-estrellas input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.elegir-estrellas label {
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--linea);
+    margin: 0;
+}
+.elegir-estrellas input:checked ~ label,
+.elegir-estrellas label:hover,
+.elegir-estrellas label:hover ~ label { color: var(--tinta); }
+.elegir-estrellas input:focus-visible + label { outline: 3px solid var(--amarillo); }
+
+/* Barra de filtros del catálogo */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+    margin-bottom: 40px;
+}
+.filtros input[type="search"] { flex: 1; min-width: 200px; }
+.filtros label { display: inline-flex; align-items: center; gap: 8px; }
+
+/* Elementos uno al lado del otro */
+.fila { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.entre { justify-content: space-between; }
+
+/* Tablas */
+.tabla-contenedor { overflow-x: auto; }
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th {
+    text-align: left;
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gris);
+    padding: 12px;
+    border-bottom: 1px solid var(--tinta);
+}
+.tabla td {
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--linea);
+    vertical-align: middle;
+}
+.tabla tr:last-child td { border-bottom: none; }
+
+/* Secciones que se abren y cierran (<details>) */
+details > summary { cursor: pointer; font-weight: 700; }
+details[open] > summary { margin-bottom: 24px; }
+
+/* Cuando todavía no hay nada que mostrar */
+.vacio { text-align: center; padding: 40px 24px; color: var(--gris); }
+.vacio svg { display: block; margin: 0 auto 16px; }
+.vacio h2 { color: var(--tinta); }
+
+/* Títulos de sección */
+.seccion { margin: 64px 0 24px; }
+.seccion:first-child { margin-top: 0; }
+
+/* Lista de temas de un curso */
+.lista-temas { list-style: none; margin: 0; padding: 0; }
+.lista-temas li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--linea);
+}
+.lista-temas li a { flex: 1; color: var(--tinta); text-decoration: none; }
+.lista-temas li a:hover { text-decoration: underline; }
+
+/* Cuadrito de "tema completado" */
+.marca {
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+.marca.hecha { background: var(--teal); border-color: var(--teal); color: var(--crema); }
+
+/* Texto largo de un tema */
+.lectura { font-size: 18px; line-height: 1.75; max-width: 720px; }
+
+/* Texto que escribió el docente: respeta saltos de línea y espacios,
+   así las sangrías de los ejemplos de código no se pierden */
+.texto-docente { white-space: pre-wrap; }
+
+/* Mensajes del foro y avisos */
+.mensaje {
+    display: flex;
+    gap: 16px;
+    padding: 24px 0;
+    border-top: 1px solid var(--linea);
+}
+.mensaje:first-child { border-top: none; padding-top: 0; }
+.mensaje p { margin: 4px 0 0; }
+
+/* Paginación « 1 2 3 » */
+.paginas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+.paginas a {
+    min-width: 40px;
+    padding: 8px 12px;
+    text-align: center;
+    border: 1px solid var(--tinta);
+    color: var(--tinta);
+    text-decoration: none;
+    font-family: var(--letra-mono);
+}
+.paginas a:hover { background: var(--crema); }
+.paginas a.activa { background: var(--tinta); color: var(--crema); }
+
+/* Cuestionario */
+.pregunta { padding: 24px 0; border-top: 1px solid var(--linea); }
+.pregunta:first-of-type { border-top: none; padding-top: 0; }
+.pregunta legend { font-weight: 700; margin-bottom: 12px; padding: 0; }
+.pregunta fieldset { border: none; margin: 0; padding: 0; }
+.opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--linea);
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-weight: 400 !important;
+}
+.opcion:hover { border-color: var(--tinta); }
+.opcion:has(input:checked) { border-color: var(--tinta); background: var(--crema); }
+.opcion.correcta   { border-color: var(--teal); background: var(--teal-suave); }
+.opcion.incorrecta { border-color: var(--rojo); background: var(--rojo-suave); }
+
+/* Calificación grande (ej. "95") */
+.nota {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+}
+.nota small { font-size: 16px; font-weight: 400; color: var(--gris); }
+
+/* ---------- 7. Gráficas de barras (panel de administración) ---------- */
+.grafica { list-style: none; margin: 0; padding: 0; }
+/* Cada fila: nombre y número arriba, barra abajo (ocupa todo el ancho) */
+.grafica li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 8px 0;
+}
+.grafica-nombre { grid-row: 1; grid-column: 1; }
+.grafica-valor  { grid-row: 1; grid-column: 2; }
+.grafica-barra  { grid-row: 2; grid-column: 1 / -1; }
+.grafica-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grafica-barra { height: 24px; border-left: 1px solid var(--tinta); }
+.grafica-barra div {
+    height: 100%;
+    min-width: 2px;
+    background: var(--teal);
+    border: 1px solid var(--tinta);
+    border-left: none;
+    transition: background 0.15s;
+}
+.grafica li:hover .grafica-barra div { background: var(--amarillo); }
+.grafica-valor { font-family: var(--letra-mono); text-align: right; }
+
+/* Columnas verticales (inscripciones por mes) */
+.columnas {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 200px;
+    border-bottom: 1px solid var(--tinta);
+    padding-top: 24px;
+}
+.columna {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+}
+.columna span { font-family: var(--letra-mono); font-size: 14px; }
+.columna div {
+    width: 100%;
+    max-width: 56px;
+    background: var(--teal);
+    border: 1px solid var(--tinta);
+    border-bottom: none;
+    transition: background 0.15s;
+}
+.columna:hover div { background: var(--amarillo); }
+.columnas-meses { display: flex; gap: 12px; margin-top: 8px; }
+.columnas-meses span {
+    flex: 1;
+    text-align: center;
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--gris);
+}
+
+/* ---------- 7b. Lecciones: secciones (lo que ve el alumno) ---------- */
+.leccion { display: flex; flex-direction: column; gap: 32px; }
+.parte { margin: 0; max-width: 760px; }
+.parte-texto { font-size: 18px; line-height: 1.75; }
+.parte-texto h3 { margin-bottom: 8px; }
+
+/* Código: fondo oscuro, letra de máquina y respeta los espacios */
+.parte-codigo figcaption {
+    display: inline-block;
+    background: var(--amarillo);
+    border: 1px solid var(--tinta);
+    border-bottom: none;
+    padding: 2px 12px;
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+}
+.parte-codigo pre {
+    margin: 0;
+    padding: 24px;
+    background: var(--tinta);
+    color: var(--crema);
+    font-family: var(--letra-mono);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: auto;          /* las líneas largas se desplazan, no se cortan */
+    tab-size: 4;
+}
+
+/* Nota importante: caja amarilla */
+.parte-nota {
+    background: var(--amarillo);
+    border: 1px solid var(--tinta);
+    padding: 16px 24px;
+}
+.parte-nota strong { display: block; margin-bottom: 4px; }
+
+/* Video de YouTube con proporción 16:9 */
+.video-marco { position: relative; aspect-ratio: 16 / 9; border: 1px solid var(--tinta); background: var(--tinta); }
+.video-marco iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.parte-video figcaption, .parte-imagen figcaption {
+    margin-top: 8px;
+    font-family: var(--letra-mono);
+    font-size: 13px;
+    color: var(--gris);
+}
+.parte-imagen img { display: block; max-width: 100%; height: auto; border: 1px solid var(--tinta); }
+
+/* Enlace como tarjeta */
+.parte-enlace {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 16px;
+    padding: 16px 24px;
+    border: 1px solid var(--tinta);
+    background: var(--crema);
+    color: var(--tinta);
+    text-decoration: none;
+}
+.parte-enlace span  { font-weight: 700; }
+.parte-enlace small { grid-row: 2; color: var(--gris); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.parte-enlace b     { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 20px; }
+.parte-enlace:hover { background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra); }
+
+.vista-previa { border-color: var(--tinta); background: var(--amarillo); }
+
+/* ---------- 7c. Editor del docente ---------- */
+
+/* Pestañas del curso: Contenido · Tareas · Avisos · Alumnos · Foro · Ajustes */
+.pestanas {
+    display: flex;
+    border-bottom: 1px solid var(--tinta);
+    margin-bottom: 40px;
+    overflow-x: auto;
+}
+.pestanas a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    color: var(--tinta);
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -1px;
+}
+.pestanas a:hover { text-decoration: underline; }
+.pestanas a.activa {
+    background: var(--blanco);
+    border-color: var(--tinta);
+    font-weight: 700;
+}
+
+/* Pasos 1 · 2 · 3 del editor de lección */
+.pasos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.pasos a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 8px 8px;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+    color: var(--tinta);
+    text-decoration: none;
+}
+.pasos a span {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tinta);
+    color: var(--crema);
+    font-family: var(--letra-mono);
+    font-size: 13px;
+}
+.pasos a:hover { background: var(--crema); }
+
+/* Botón cuadrado pequeño (↑ ↓ 👁) */
+.boton-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+    color: var(--tinta);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+.boton-icono:hover:not(:disabled) { background: var(--amarillo); color: var(--tinta); }
+.boton-icono:disabled { opacity: 0.3; cursor: default; }
+
+/* Módulos y lecciones en la página del curso */
+.modulo-cabeza { margin-bottom: 16px; align-items: flex-start; }
+.modulo .acciones { gap: 8px; }
+.lista-lecciones li { flex-wrap: wrap; gap: 8px; }
+.lista-lecciones li > a:first-of-type { flex: 1; min-width: 160px; }
+.lista-lecciones li > a:not(:first-of-type) { flex: 0 0 auto; }   /* Editar y 👁 no se estiran */
+.agregar-linea { margin-top: 16px; }
+.agregar-linea input[type="text"] { flex: 1; min-width: 200px; }
+
+/* "Renombrar": un desplegable que se abre debajo del botón */
+.desplegable { position: relative; }
+.desplegable summary { list-style: none; }
+.desplegable summary::-webkit-details-marker { display: none; }
+.desplegable[open] > summary { margin-bottom: 0; }
+.desplegable-caja {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 10;
+    width: min(420px, 80vw);
+    padding: 16px;
+    background: var(--blanco);
+    border: 1px solid var(--tinta);
+    box-shadow: var(--sombra);
+    flex-wrap: nowrap;
+}
+.desplegable-caja input { flex: 1; min-width: 0; }
+
+/* Lista "Antes de publicar" */
+.revision { border-left: 6px solid var(--amarillo); }
+.revision ul { list-style: none; margin: 0; padding: 0; }
+.revision li { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+.revision li.falta { color: var(--rojo); }
+.revision li.falta .marca { border-color: var(--rojo); color: var(--rojo); }
+.revision li.sugerencia { color: var(--gris); }
+.revision em { font-style: normal; font-family: var(--letra-mono); font-size: 13px; }
+
+.zona-peligro { border-color: var(--rojo); }
+.zona-peligro h2 { color: var(--rojo); }
+
+/* Cada sección / pregunta dentro del editor */
+.seccion-editor {
+    background: var(--blanco);
+    border: 1px solid var(--tinta);
+    margin-bottom: 16px;
+    scroll-margin-top: 24px;
+}
+.seccion-editor-cabeza {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 8px 8px 16px;
+    border-bottom: 1px solid var(--linea);
+    background: var(--crema);
+}
+.seccion-editor-vista { padding: 24px; }
+.seccion-editor-vista .parte { max-width: none; }
+.seccion-editor-vista .parte-video,
+.seccion-editor-vista .parte-imagen { max-width: 420px; }   /* en el editor se ven más chicos */
+.seccion-editor-form { border-top: 1px solid var(--linea); padding: 12px 24px; }
+.seccion-editor-form[open] { background: var(--crema); padding-bottom: 24px; }
+.seccion-editor-form summary { font-weight: 400; color: var(--teal); }
+.seccion-editor-form[open] summary { margin-bottom: 16px; }
+
+/* Botones para elegir el tipo de sección nueva */
+.tipos-seccion { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.tipos-seccion a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 1px solid var(--tinta);
+    background: var(--blanco);
+    color: var(--tinta);
+    text-decoration: none;
+}
+.tipos-seccion a:hover  { background: var(--crema); }
+.tipos-seccion a.activo { background: var(--amarillo); font-weight: 700; box-shadow: var(--sombra); }
+.nueva-seccion { border-top: 1px solid var(--linea); padding-top: 24px; }
+
+/* Caja de texto para escribir código */
+.area-codigo {
+    font-family: var(--letra-mono);
+    font-size: 15px;
+    background: var(--tinta) !important;
+    color: var(--crema) !important;
+    tab-size: 4;
+}
+
+/* Opciones de una pregunta en el editor */
+.opcion-editor { display: flex !important; align-items: center; gap: 12px; font-weight: 400 !important; margin: 0 !important; }
+.opcion-editor input[type="text"] { flex: 1; }
+.opciones-vista { list-style: none; margin: 12px 0 0; padding: 0; }
+.opciones-vista li { padding: 8px 12px; border: 1px solid var(--linea); margin-bottom: 6px; display: flex; justify-content: space-between; gap: 8px; }
+.opciones-vista li.correcta { border-color: var(--teal); background: var(--teal-suave); }
+
+/* ---------- 8. Login y registro ---------- */
+.acceso {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    min-height: 100vh;
+}
+.acceso-marca {
+    background: var(--teal);
+    color: var(--crema);
+    padding: 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+}
+.acceso-marca .logo { color: var(--crema); padding: 0; }
+.acceso-marca h1 { font-size: 56px; line-height: 1.15; max-width: 520px; margin-bottom: 24px; }
+.acceso-marca p { font-size: 20px; opacity: 0.9; max-width: 460px; margin: 0; }
+.acceso-dibujo { width: 100%; max-width: 420px; }
+.acceso-formulario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+}
+.acceso-formulario .tarjeta { width: 100%; max-width: 440px; padding: 40px; margin: 0; }
+.acceso-formulario h2 { font-size: 40px; }
+
+/* ---------- 9. Celular ---------- */
+@media (max-width: 860px) {
+    .app { flex-direction: column; }
+    .lateral {
+        width: 100%;
+        height: auto;
+        position: sticky;
+        z-index: 50;
+        border-right: none;
+        border-bottom: 1px solid var(--tinta);
+        padding: 12px 16px;
+    }
+    .lateral-arriba { margin-bottom: 0; }
+    .boton-menu { display: block; }
+
+    /* El menú se esconde hasta tocar ☰ */
+    .menu, .usuario-menu { display: none; }
+    .lateral.abierto .menu { display: block; margin-top: 16px; }
+    .lateral.abierto .usuario-menu { display: flex; margin-top: 16px; padding-bottom: 8px; }
+
+    .contenido { padding: 24px 16px 64px; }
+    .banda { margin: -24px -16px 24px; padding: 40px 16px; }
+    .banda h1 { font-size: 40px; }
+    .banda-dibujo { display: none; }
+    h1 { font-size: 32px; }
+    .tarjeta-grande { padding: 24px; }
+    .numeros { grid-template-columns: 1fr 1fr; }
+    .numero { padding: 16px; }
+    .numero strong { font-size: 32px; }
+    .confirmar { padding: 24px; }
+
+    .acceso { grid-template-columns: 1fr; }
+    .acceso-marca { padding: 40px 16px; }
+    .acceso-marca h1 { font-size: 40px; }
+    .acceso-dibujo { display: none; }
+    .acceso-formulario .tarjeta { padding: 24px 16px; }
+    .acceso-formulario h2 { font-size: 32px; }
+
+    .globos { top: auto; bottom: 16px; right: 16px; left: 16px; max-width: none; }
+    .pestanas { margin-left: -16px; margin-right: -16px; padding: 0 16px; }
+    .seccion-editor-vista { padding: 16px; }
+    .seccion-editor-form { padding: 12px 16px; }
+    .parte-codigo pre { padding: 16px; font-size: 14px; }
+    .desplegable-caja { right: auto; left: 0; }
+}
+
+/* ---------- 10. Al imprimir (la constancia) ---------- */
+@media print {
+    .no-imprimir { display: none !important; }
+    body { background: var(--blanco); }
+}

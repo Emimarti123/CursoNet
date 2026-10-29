@@ -1,0 +1,3 @@
+# Archivos que suben los usuarios (fotos y tareas): no se guardan en git
+subidas/*
+!subidas/.htaccess

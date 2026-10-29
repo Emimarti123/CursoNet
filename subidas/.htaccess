@@ -1,0 +1,2 @@
+# Por seguridad: aquí solo hay archivos subidos; nunca se ejecuta código PHP.
+php_flag engine off

@@ -1,65 +1,102 @@
 <?php
-include_once "conexion.php";
+session_start();
+require_once "conexion.php";
+require_once "includes/funciones.php";
 
-$mensaje = "";
+if (isset($_SESSION["usuario_id"])) {
+    irA("panel.php");
+}
+
+$errores = [];   // errores de cada campo: "campo" => "mensaje"
+$error   = "";   // error general (no es de un campo en particular)
+$nombre  = "";
+$email   = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nombre   = trim($_POST["nombre"]);
-    $email    = trim($_POST["email"]);
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $rol      = $_POST["rol"];
+    $nombre    = trim($_POST["nombre"]);
+    $email     = trim($_POST["email"]);
+    $password  = $_POST["password"];
+    $confirmar = $_POST["confirmar"];
 
-    $sql = "INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ssss", $nombre, $email, $password, $rol);
+    // Revisamos cada campo; si algo está mal, guardamos el mensaje para ese campo
+    if ($nombre === "") {
+        $errores["nombre"] = "Escribe tu nombre.";
+    } elseif (mb_strlen($nombre) > 100) {
+        $errores["nombre"] = "El nombre puede tener máximo 100 caracteres.";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 150) {
+        $errores["email"] = "Escribe un correo válido (ej. nombre@correo.com).";
+    }
+    if (mb_strlen($password) < 6) {
+        $errores["password"] = "La contraseña debe tener al menos 6 caracteres.";
+    }
+    if ($password !== $confirmar) {
+        $errores["confirmar"] = "Las contraseñas no coinciden.";
+    }
 
-    try {
-        $stmt->execute();
-        $mensaje = "Registro completado. Ya puedes iniciar sesión.";
-        
-    } catch (mysqli_sql_exception $e) {
-        // 1062 = el email ya existe
-        $mensaje = $e->getCode() === 1062
-            ? "Ese email ya está registrado."
-            : "No se pudo completar el registro.";
+    // Solo guardamos si no hubo ningún error
+    if (count($errores) === 0) {
+        // Quien se registra solo siempre es alumno.
+        // Los demás roles los asigna el Super Admin.
+        try {
+            consulta(
+                "INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, 'alumno')",
+                [$nombre, $email, password_hash($password, PASSWORD_DEFAULT)]
+            );
+            irA("login.php", "¡Cuenta creada! Ya puedes iniciar sesión.");
+        } catch (mysqli_sql_exception $e) {
+            // 1062 = el email ya existe
+            if ($e->getCode() === 1062) {
+                $errores["email"] = "Ese correo ya está registrado.";
+            } else {
+                $error = "No se pudo completar el registro.";
+            }
+        }
     }
 }
+
+$titulo = "Crear cuenta";
+include "includes/arriba_publico.php";
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro</title>
-</head>
-<body>
-    <h1>Crear cuenta</h1>
 
-    <?php if ($mensaje !== "") { ?>
-        <p><?php echo htmlspecialchars($mensaje); ?></p>
-    <?php } ?>
+<h2>Crea tu cuenta</h2>
+<p class="texto-gris">Es gratis y solo toma un minuto.</p>
 
-    <form method="POST">
-        <label>Nombre</label>
-        <input type="text" name="nombre" required>
+<?php if ($error !== "") { ?>
+    <div class="aviso aviso-error"><?php e($error); ?></div>
+<?php } ?>
 
-        <label>Email</label>
-        <input type="email" name="email" required>
+<!-- novalidate: apaga los globos del navegador; los errores se muestran debajo de cada campo -->
+<form method="POST" class="validar" novalidate>
+    <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" value="<?php e($nombre); ?>" maxlength="100" required>
+        <?php errorCampo($errores, "nombre"); ?>
+    </div>
 
-        <label>Contraseña</label>
-        <input type="password" name="password" required>
+    <div class="campo">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" value="<?php e($email); ?>" placeholder="tu@correo.com" maxlength="150" required>
+        <?php errorCampo($errores, "email"); ?>
+    </div>
 
-        <label>Tipo de cuenta</label>
-        <select name="rol" required>
-            <option value="">Selecciona</option>
-            <option value="super_admin">Super admin</option>
-            <option value="mini_admin">Mini admin</option>
-            <option value="ponente">Ponente</option>
-            <option value="alumno">Alumno</option>
-        </select>
+    <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+        <?php if (isset($errores["password"])) { errorCampo($errores, "password"); } else { ?>
+            <small>Mínimo 6 caracteres.</small>
+        <?php } ?>
+    </div>
 
-        <button type="submit">Registrarme</button>
-    </form>
+    <div class="campo">
+        <label for="confirmar">Repite la contraseña</label>
+        <input type="password" id="confirmar" name="confirmar" data-igual-a="password" required>
+        <?php errorCampo($errores, "confirmar"); ?>
+    </div>
 
-    <p>¿Ya tienes cuenta? <a href="login.php">Iniciar sesión</a></p>
-</body>
-</html>
+    <button type="submit" class="boton boton-ancho">Crear cuenta</button>
+</form>
+
+<p class="texto-gris">¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a></p>
+
+<?php include "includes/abajo_publico.php"; ?>
